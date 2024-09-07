@@ -1,0 +1,97 @@
+bind-address: "*"
+lan-disallowed-ips:
+  - ::/0
+lan-allowed-ips:
+  - 0.0.0.0/0
+
+find-process-mode: strict
+tcp-concurrent: false
+
+profile:
+  store-selected: true
+  store-fake-ip: false
+
+geodata-mode: true
+geodata-loader: standard
+geo-auto-update: true
+geo-update-interval: 24
+geox-url:
+  geoip: "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat"
+  geosite: "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat"
+  mmdb: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/country.mmdb"
+  asn: "https://github.com/xishang0128/geoip/releases/download/latest/GeoLite2-ASN.mmdb"
+
+tun:
+  udp-timeout: 3
+
+dns:
+  ipv6: false
+  listen: 127.0.0.1:53
+  use-hosts: true
+  use-system-hosts: false
+  respect-rules: true
+  enhanced-mode: fake-ip
+  fake-ip-filter:
+    - "+.com"
+    - "+.cn"
+    - "+.top"
+    - "+.net"
+    - "+.org"
+    - "+.cloud"
+    - "+.jp"
+  default-nameserver: [system]
+  nameserver-policy:
+    # "+.internal.crop.com": 10.0.0.1
+    "geosite:cn,private": system
+    "geosite:geolocation-!cn": 8.8.8.8
+  nameserver:
+    - system
+  proxy-server-nameserver: [8.8.8.8]
+  fallback: [1.0.0.1]
+
+sniffer:
+  enable: false
+
+rule-providers:
+  dnses:
+    type: http
+    behavior: ipcidr
+    url: "https://raw.githubusercontent.com/eronez/clash_rules/main/dns.yaml"
+    path: ./ruleset/dns.yaml
+    interval: 86400
+  applications:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/applications.txt"
+    path: ./ruleset/applications.yaml
+    interval: 86400
+  direct:
+    type: http
+    behavior: domain
+    url: "https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/direct.txt"
+    path: ./ruleset/direct.yaml
+    interval: 86400
+  proxy:
+    type: http
+    behavior: domain
+    url: "https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/proxy.txt"
+    path: ./ruleset/proxy.yaml
+    interval: 86400
+
+rules:
+  - PROCESS-NAME,rustdesk,DIRECT
+  - RULE-SET,dnses,DNS
+  - GEOIP,private,DIRECT
+  - GEOSITE,private,DIRECT
+  - GEOSITE,category-ads-all
+  - GEOSITE,category-ads,REJECT
+  - DOMAIN,ads.reddit.com,REJECT
+  - GEOSITE,google,PROXY
+  - GEOSITE,gfw,PROXY
+  - RULE-SET,proxy,PROXY
+  - RULE-SET,direct,DIRECT
+  - GEOIP,GOOGLE,PROXY
+  - GEOIP,CLOUDFLARE,PROXY
+  - GEOIP,TELEGRAM,PROXY
+  - GEOIP,CN,DIRECT
+  - MATCH,PROXY
