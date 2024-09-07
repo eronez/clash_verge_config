@@ -1,0 +1,11 @@
+.view-lines.monaco-mouse-cursor-text {
+  font-family: 'Ubuntu Mono', 'twemoji mozilla', 'Noto Sans Mono CJK' !important;
+}
+
+.line-numbers {
+  height: 19px !important;
+}
+
+.lh-odd {
+  margin-top: 0px;
+}
