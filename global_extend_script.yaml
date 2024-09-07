@@ -1,0 +1,35 @@
+// Define main function (script entry)
+
+function main(config, profileName) {
+
+  const node1 = {
+    "name": '☀node1'
+  }
+
+  config["proxies"].unshift(node1);
+
+  config["proxy-groups"].forEach(group => {
+    if (group["name"] === "PROXY") {
+      group["proxies"].push('☀node1');
+    }
+  });
+
+
+  config["proxy-groups"] = config["proxy-groups"].filter(group => group["name"] === "PROXY");
+  const dns_proxy_group = {
+    "name": "DNS",
+    "type": "select",
+    "proxies": config["proxy-groups"][0]["proxies"]
+  };
+  config["proxy-groups"].push(dns_proxy_group);
+
+  const ruleProviders = config["rule-providers"];
+  for (const key in ruleProviders) {
+    if (ruleProviders[key]["url"] && ruleProviders[key]["url"].startsWith("https://example.com")) {
+      delete ruleProviders[key];
+      console.log(`delete rule provider: ${key}`);
+    }
+  }
+
+  return config;
+}
